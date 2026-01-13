@@ -5,55 +5,50 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_next_auth_core/next_auth.dart';
 
 /// Optional value wrapper for copyWith methods.
-/// 
+///
 /// Used to distinguish between null values and absent values when updating state.
 class Opt<T> {
   /// The wrapped value, which may be null.
   final T? value;
-  
+
   /// Creates an [Opt] with the given [value].
   const Opt(this.value);
-  
+
   /// Represents an absent value (not provided).
   static const Opt absent = Opt(null);
 }
 
 /// State class for NextAuth session and status.
-/// 
+///
 /// Contains the current session data and authentication status.
-class NextAuthState<T extends Map<String, dynamic>> {
+class NextAuthState<T> {
   /// Current session data, or null if not authenticated.
   final T? session;
-  
+
   /// Current authentication status.
   final SessionStatus status;
 
   /// Creates a [NextAuthState] with the given [session] and [status].
-  const NextAuthState({
-    this.session,
-    required this.status,
-  });
+  const NextAuthState({this.session, required this.status});
 
   /// Creates a copy of this state with the given fields replaced.
-  /// 
+  ///
   /// Use [Opt.absent] to keep the current value, or [Opt(value)] to update it.
-  NextAuthState<T> copyWith({
-    Opt<T>? session,
-    Opt<SessionStatus>? status,
-  }) {
+  NextAuthState<T> copyWith({Opt<T>? session, Opt<SessionStatus>? status}) {
     return NextAuthState<T>(
       session: session == null ? this.session : session.value,
-      status: status == null ? this.status : status.value!
+      status: status == null ? this.status : status.value!,
     );
   }
 }
 
 /// Bloc that manages NextAuthClient state, refetch timer, and app lifecycle.
-/// 
+///
 /// Automatically handles session refetching based on interval and app lifecycle,
 /// and emits state changes when session or status updates.
-class NextAuthBloc<T extends Map<String, dynamic>>
-    extends Cubit<NextAuthState<T>> with WidgetsBindingObserver {
+class NextAuthBloc<T>
+    extends Cubit<NextAuthState<T>>
+    with WidgetsBindingObserver {
   final NextAuthClient<T> _client;
   final int? _storedRefetchInterval;
   final bool _storedRefetchOnWindowFocus;
@@ -63,7 +58,7 @@ class NextAuthBloc<T extends Map<String, dynamic>>
   StreamSubscription<NextAuthEvent>? _eventsSubscription;
 
   /// Creates a [NextAuthBloc] with the given configuration.
-  /// 
+  ///
   /// [client] - The NextAuth client instance to manage.
   /// [refetchInterval] - Interval in milliseconds to refetch session. If null, no automatic refetching.
   /// [refetchOnWindowFocus] - Whether to refetch when app comes to foreground. Defaults to true.
@@ -71,10 +66,10 @@ class NextAuthBloc<T extends Map<String, dynamic>>
     required NextAuthClient<T> client,
     int? refetchInterval,
     bool refetchOnWindowFocus = true,
-  })  : _client = client,
-        _storedRefetchInterval = refetchInterval,
-        _storedRefetchOnWindowFocus = refetchOnWindowFocus,
-        super(NextAuthState<T>(status: SessionStatus.initial)) {
+  }) : _client = client,
+       _storedRefetchInterval = refetchInterval,
+       _storedRefetchOnWindowFocus = refetchOnWindowFocus,
+       super(NextAuthState<T>(status: SessionStatus.initial)) {
     _eventsSubscription = _client.eventBus.on<NextAuthEvent>().listen((event) {
       if (event is SessionChangedEvent) {
         _handleSessionChanged(event.session as T?);
@@ -93,10 +88,7 @@ class NextAuthBloc<T extends Map<String, dynamic>>
     }
 
     // initial state
-    emit(NextAuthState<T>(
-      session: _client.session,
-      status: _client.status,
-    ));
+    emit(NextAuthState<T>(session: _client.session, status: _client.status));
   }
 
   void _handleStatusChanged(SessionStatus status) {
@@ -129,8 +121,7 @@ class NextAuthBloc<T extends Map<String, dynamic>>
     if (!_isAppInForeground) return;
     try {
       await _client.refetchSession();
-    } catch (_) {
-    }
+    } catch (_) {}
   }
 
   @override
@@ -173,14 +164,14 @@ class NextAuthBloc<T extends Map<String, dynamic>>
 
 /// Scope widget for NextAuth Bloc
 /// Wrap your app with this widget to provide NextAuthClient and configuration
-/// 
+///
 /// This widget will wait for the client to be initialized before rendering its child,
 /// ensuring that session and status are available when any page first watches them.
-/// 
+///
 /// Example:
 /// ```dart
 /// final client = NextAuthClient(config);
-/// 
+///
 /// NextAuthBlocScope(
 ///   client: client,
 ///   refetchInterval: 30000,
@@ -188,16 +179,16 @@ class NextAuthBloc<T extends Map<String, dynamic>>
 ///   child: MyApp(),
 /// )
 /// ```
-class NextAuthBlocScope extends StatelessWidget {
+class NextAuthBlocScope<T> extends StatelessWidget {
   /// The NextAuth client instance to provide to the bloc.
-  final NextAuthClient<Map<String, dynamic>> client;
-  
+  final NextAuthClient<T> client;
+
   /// Interval in milliseconds to refetch session. If null, no automatic refetching.
   final int? refetchInterval;
-  
+
   /// Whether to refetch session when app comes to foreground. Defaults to true.
   final bool refetchOnWindowFocus;
-  
+
   /// The widget tree below this scope.
   final Widget child;
 
@@ -211,18 +202,18 @@ class NextAuthBlocScope extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bloc = NextAuthBloc<Map<String, dynamic>>(
+    final bloc = NextAuthBloc<T>(
       client: client,
       refetchInterval: refetchInterval,
       refetchOnWindowFocus: refetchOnWindowFocus,
     );
 
-    // Directly call without waiting, because the child widget needs to determine which UI 
-    // to display based on SessionStatus and SessionStatus will be updated when 
+    // Directly call without waiting, because the child widget needs to determine which UI
+    // to display based on SessionStatus and SessionStatus will be updated when
     // recoverLoginStatusFromCache is finished initializing.
     client.recoverLoginStatusFromCache();
 
-    return BlocProvider<NextAuthBloc<Map<String, dynamic>>>(
+    return BlocProvider<NextAuthBloc<T>>(
       create: (_) => bloc,
       child: child,
     );
