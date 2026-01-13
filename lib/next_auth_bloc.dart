@@ -2,23 +2,41 @@ import 'dart:async';
 
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_next_auth/next_auth.dart';
+import 'package:flutter_next_auth_core/next_auth.dart';
 
+/// Optional value wrapper for copyWith methods.
+/// 
+/// Used to distinguish between null values and absent values when updating state.
 class Opt<T> {
+  /// The wrapped value, which may be null.
   final T? value;
+  
+  /// Creates an [Opt] with the given [value].
   const Opt(this.value);
+  
+  /// Represents an absent value (not provided).
   static const Opt absent = Opt(null);
 }
 
+/// State class for NextAuth session and status.
+/// 
+/// Contains the current session data and authentication status.
 class NextAuthState<T extends Map<String, dynamic>> {
+  /// Current session data, or null if not authenticated.
   final T? session;
+  
+  /// Current authentication status.
   final SessionStatus status;
 
+  /// Creates a [NextAuthState] with the given [session] and [status].
   const NextAuthState({
     this.session,
     required this.status,
   });
 
+  /// Creates a copy of this state with the given fields replaced.
+  /// 
+  /// Use [Opt.absent] to keep the current value, or [Opt(value)] to update it.
   NextAuthState<T> copyWith({
     Opt<T>? session,
     Opt<SessionStatus>? status,
@@ -30,7 +48,10 @@ class NextAuthState<T extends Map<String, dynamic>> {
   }
 }
 
-/// Bloc that manages NextAuthClient state, refetch timer, and app lifecycle
+/// Bloc that manages NextAuthClient state, refetch timer, and app lifecycle.
+/// 
+/// Automatically handles session refetching based on interval and app lifecycle,
+/// and emits state changes when session or status updates.
 class NextAuthBloc<T extends Map<String, dynamic>>
     extends Cubit<NextAuthState<T>> with WidgetsBindingObserver {
   final NextAuthClient<T> _client;
@@ -41,6 +62,11 @@ class NextAuthBloc<T extends Map<String, dynamic>>
   bool _isObserverAdded = false;
   StreamSubscription<NextAuthEvent>? _eventsSubscription;
 
+  /// Creates a [NextAuthBloc] with the given configuration.
+  /// 
+  /// [client] - The NextAuth client instance to manage.
+  /// [refetchInterval] - Interval in milliseconds to refetch session. If null, no automatic refetching.
+  /// [refetchOnWindowFocus] - Whether to refetch when app comes to foreground. Defaults to true.
   NextAuthBloc({
     required NextAuthClient<T> client,
     int? refetchInterval,
@@ -130,7 +156,7 @@ class NextAuthBloc<T extends Map<String, dynamic>>
     }
   }
 
-  /// get NextAuthClient instance
+  /// Gets the underlying NextAuthClient instance.
   NextAuthClient<T>? get client => _client;
 
   @override
@@ -163,10 +189,16 @@ class NextAuthBloc<T extends Map<String, dynamic>>
 /// )
 /// ```
 class NextAuthBlocScope extends StatelessWidget {
+  /// The NextAuth client instance to provide to the bloc.
   final NextAuthClient<Map<String, dynamic>> client;
-  /// in milliseconds
+  
+  /// Interval in milliseconds to refetch session. If null, no automatic refetching.
   final int? refetchInterval;
+  
+  /// Whether to refetch session when app comes to foreground. Defaults to true.
   final bool refetchOnWindowFocus;
+  
+  /// The widget tree below this scope.
   final Widget child;
 
   const NextAuthBlocScope({
