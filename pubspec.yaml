@@ -1,13 +1,15 @@
 name: flutter_next_auth_bloc
-version: 0.0.1
-publish_to: none
+description: BLoC integration for NextAuth authentication in Flutter, providing state management for session and authentication status.
+version: 1.0.0
+repository: https://github.com/jcyuan/flutter_next_auth_bloc
+issue_tracker: https://github.com/jcyuan/flutter_next_auth_bloc/issues
+homepage: https://github.com/jcyuan/flutter_next_auth_bloc#readme
 environment:
   sdk: ">=3.10.4 <4.0.0"
 dependencies:
   flutter:
     sdk: flutter
 
-  flutter_next_auth:
-    path: ../flutter_next_auth
-
+  flutter_next_auth_core: ^1.0.2
+  
   flutter_bloc: ^9.1.0
