@@ -17,3 +17,7 @@
 ## 1.0.4
 
 - Updated example README.md
+
+## 1.0.5
+
+- Link oAuth backend logic example to Core lib, not provider it in this lib
