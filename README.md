@@ -9,14 +9,18 @@ A Flutter package that provides BLoC integration for `flutter_next_auth_core`, e
 - State synchronization via `NextAuthBloc`
 - Built on top of `flutter_next_auth_core` and `flutter_bloc`
 
+Example video:
+
+https://github.com/user-attachments/assets/0cd7a786-c57c-4b13-9b08-03bf6f9bba4e
+
 ## Installation
 
 Add `flutter_next_auth_bloc` to your `pubspec.yaml`:
 
 ```yaml
 dependencies:
-  flutter_next_auth_core: ^1.0.2
-  flutter_next_auth_bloc: ^1.0.0
+  flutter_next_auth_core: ^1.0.5
+  flutter_next_auth_bloc: ^1.0.2
   flutter_bloc: ^9.1.0
 ```
 
