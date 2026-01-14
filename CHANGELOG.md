@@ -9,3 +9,11 @@
 ## 1.0.2
 
 - Added in-progress status for example
+
+## 1.0.3
+
+- Updated README.md
+
+## 1.0.4
+
+- Updated example README.md
