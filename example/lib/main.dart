@@ -83,6 +83,7 @@ class _HomePage extends StatefulWidget {
 
 class _HomePageState extends State<_HomePage> {
   StreamSubscription<NextAuthEvent>? _eventsSubscription;
+  bool _isInProgress = false;
 
   @override
   void initState() {
@@ -141,7 +142,21 @@ class _HomePageState extends State<_HomePage> {
                 return Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text('Session Status: ${sessionStatus.name}'),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text('Session Status: ${sessionStatus.name}'),
+                        const SizedBox(width: 4),
+                        Visibility(
+                          visible: _isInProgress,
+                          child: const SizedBox(
+                            width: 16,
+                            height: 16,
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          ),
+                        ),
+                      ],
+                    ),
                     const SizedBox(height: 16),
                     if (session != null)
                       Text('Session: ${session.toString()}')
@@ -149,67 +164,85 @@ class _HomePageState extends State<_HomePage> {
                       const Text('No session'),
                     const SizedBox(height: 16),
                     ElevatedButton(
-                      onPressed: () async {
-                        // Example: Sign in with credentials using getIt
-                        final nextAuthClient =
-                            getIt<NextAuthClient<SessionData>>();
-                        final response = await nextAuthClient.signIn(
-                          'credentials',
-                          credentialsOptions: CredentialsSignInOptions(
-                            email: 'example@example.com',
-                            password: 'password',
-                            // Optional: turnstile token for security
-                            // but it's recommended to use it for security.
-                            // turnstileToken: 'yourTurnstileToken',
-                          ),
-                        );
-                        if (!context.mounted) return;
-                        if (response.ok) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('Sign in successful')),
-                          );
-                        } else {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text(
-                                'Sign in failed: ${response.error}',
-                              ),
+                      onPressed: _isInProgress ? null : () async {
+                        setState(() {
+                          _isInProgress = true;
+                        });
+                        try {
+                          // Example: Sign in with credentials using getIt
+                          final nextAuthClient =
+                              getIt<NextAuthClient<SessionData>>();
+                          final response = await nextAuthClient.signIn(
+                            'credentials',
+                            credentialsOptions: CredentialsSignInOptions(
+                              email: 'example@example.com',
+                              password: 'password',
+                              // Optional: turnstile token for security
+                              // but it's recommended to use it for security.
+                              // turnstileToken: 'yourTurnstileToken',
                             ),
                           );
+                          if (!context.mounted) return;
+                          if (response.ok) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(content: Text('Sign in successful')),
+                            );
+                          } else {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(
+                                  'Sign in failed: ${response.error}',
+                                ),
+                              ),
+                            );
+                          }
+                        } finally {
+                          setState(() {
+                            _isInProgress = false;
+                          });
                         }
                       },
                       child: const Text('Sign In with Password'),
                     ),
                     const SizedBox(height: 8),
                     ElevatedButton(
-                      onPressed: () async {
-                        // Example: Sign in with Google OAuth
-                        final nextAuthClient =
-                            getIt<NextAuthClient<SessionData>>();
-                        final response = await nextAuthClient.signIn(
-                          'google',
-                          oauthOptions: OAuthSignInOptions(
-                            provider: 'google',
-                            // Optional: turnstile token for security
-                            // but it's recommended to use it for security.
-                            // turnstileToken: 'yourTurnstileToken',
-                          ),
-                        );
-                        if (!context.mounted) return;
-                        if (response.ok) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('Google sign in successful'),
+                      onPressed: _isInProgress ? null : () async {
+                        setState(() {
+                          _isInProgress = true;
+                        });
+                        try {
+                          // Example: Sign in with Google OAuth
+                          final nextAuthClient =
+                              getIt<NextAuthClient<SessionData>>();
+                          final response = await nextAuthClient.signIn(
+                            'google',
+                            oauthOptions: OAuthSignInOptions(
+                              provider: 'google',
+                              // Optional: turnstile token for security
+                              // but it's recommended to use it for security.
+                              // turnstileToken: 'yourTurnstileToken',
                             ),
                           );
-                        } else {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text(
-                                'Google sign in failed: ${response.error}',
+                          if (!context.mounted) return;
+                          if (response.ok) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('Google sign in successful'),
                               ),
-                            ),
-                          );
+                            );
+                          } else {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(
+                                  'Google sign in failed: ${response.error}',
+                                ),
+                              ),
+                            );
+                          }
+                        } finally {
+                          setState(() {
+                            _isInProgress = false;
+                          });
                         }
                       },
                       child: const Text('Sign In with Google'),
