@@ -21,3 +21,7 @@
 ## 1.0.5
 
 - Link oAuth backend logic example to Core lib, not provider it in this lib
+
+## 1.0.6
+
+- Add email login in example

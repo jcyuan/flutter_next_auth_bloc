@@ -28,8 +28,8 @@ dependencies:
   dio: ^5.1.1
   google_sign_in: ^7.2.0
   get_it: ^9.2.0
-  flutter_next_auth_core: ^1.0.5
-  flutter_next_auth_bloc: ^1.0.2
+  flutter_next_auth_core: ^1.1.0
+  flutter_next_auth_bloc: ^1.0.6
   flutter_bloc: ^9.1.0
 ```
 

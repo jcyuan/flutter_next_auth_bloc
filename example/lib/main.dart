@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_next_auth_core/next_auth.dart';
 import 'package:flutter_next_auth_bloc/next_auth_bloc.dart';
 import 'package:get_it/get_it.dart';
+import 'package:next_auth_client_example/login_email.dart';
 import 'package:next_auth_client_example/providers/google_oauth_provider.dart';
 import 'package:next_auth_client_example/session_data.dart';
 import 'package:next_auth_client_example/simple_dio_httpclient.dart';
@@ -203,6 +204,19 @@ class _HomePageState extends State<_HomePage> {
                         }
                       },
                       child: const Text('Sign In with Password'),
+                    ),
+                    const SizedBox(height: 8),
+                    ElevatedButton(
+                      onPressed: _isInProgress
+                          ? null
+                          : () {
+                              Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (_) => const EmailLoginPage(),
+                                ),
+                              );
+                            },
+                      child: const Text('Sign In with Email'),
                     ),
                     const SizedBox(height: 8),
                     ElevatedButton(

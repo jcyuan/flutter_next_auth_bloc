@@ -19,8 +19,8 @@ Add `flutter_next_auth_bloc` to your `pubspec.yaml`:
 
 ```yaml
 dependencies:
-  flutter_next_auth_core: ^1.0.5
-  flutter_next_auth_bloc: ^1.0.2
+  flutter_next_auth_core: ^1.1.0
+  flutter_next_auth_bloc: ^1.0.6
   flutter_bloc: ^9.1.0
 ```
 
