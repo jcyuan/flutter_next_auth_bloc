@@ -25,3 +25,7 @@
 ## 1.0.6
 
 - Add email login in example
+
+## 1.0.7
+
+- Update dependency version
